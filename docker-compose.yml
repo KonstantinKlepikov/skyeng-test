@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+
+  skyeng-mongo:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DEV_ROOT_USERNAME?Variable not set}
+      MONGO_INITDB_ROOT_PASSWORD: ${DEV_ROOT_PASSWORD?Variable not set}
+      MONGO_INITDB_DATABASE: dev-db
+    volumes:
+      - mongo-skyeng-data:/data/db
+    networks:
+      - skyeng-network
+
+  skyeng-celery-worker:
+    image: skyeng-celery-worker
+    container_name: skyeng-celery-worker
+    build:
+      context: ./api
+      dockerfile: celeryworker.dockerfile
+    networks:
+      - skyeng-network
+
+  skyeng-api:
+    image: skyeng-api
+    container_name: skyeng-api
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    build:
+      context: ./api
+      dockerfile: api.dockerfile
+    volumes:
+      - ./api/app:/app
+    depends_on:
+      - skyeng-mongo
+      - skyeng-celery-worker
+    networks:
+      - skyeng-network
+
+  skyeng-web:
+    image: skyeng-web
+    container_name: skyeng-web
+    ports:
+      - "8501:8501"
+    build:
+      context: ./web
+      dockerfile: web.dockerfile
+    volumes:
+      - ./web/app:/app
+    networks:
+      - skyeng-network
+
+volumes:
+  mongo-skyeng-data:
+    driver: local
+
+networks:
+  skyeng-network:
