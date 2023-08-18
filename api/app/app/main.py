@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.db.init_db import create_collections
 from app.config import settings
 from app.api.api_v1.api import api_router
 
@@ -11,6 +12,8 @@ app = FastAPI(
     version=settings.version,
     openapi_tags=settings.openapi_tags,
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+    on_startup=[create_collections],
+    on_shutdown=[],
         )
 
 
