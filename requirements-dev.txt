@@ -1,12 +1,14 @@
-fastapi==0.79.1
-pydantic==1.10.5
+fastapi>=0.100
+pydantic>=2.0
+pydantic-settings>=2.0
 python-dotenv==0.21.1
 python-jose==3.3.0
 PyYAML==6.0
-starlette==0.19.1
+starlette>=0.24
 toml==0.10.2
 uvicorn==0.18.3
 streamlit==1.16.0
 requests==2.27.1
 streamlit-nested-layout==0.1.1
 celery==5.2.7
+fastapi-mail[aioredis]==1.4.1

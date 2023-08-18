@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "social-example"
+name = "skyeng-test"
 version = "0.0.1"
 description = "Example of simple block-post api with social functions"
 authors = ["Konstantin Klepikov <oformleno@gmail.com>"]
@@ -7,7 +7,9 @@ authors = ["Konstantin Klepikov <oformleno@gmail.com>"]
 [tool.poetry.dependencies]
 python = "3.10.6"
 python-dotenv = ">=0.20.0"
-fastapi = "^0.79.1"
+fastapi = "^0.100"
+pydantic = "^2.0"
+pydantic-settings="^2.0"
 uvicorn = {extras = ["standard"], version = "^0.18.2"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = "^1.7.4"
@@ -17,6 +19,7 @@ bcrypt = "^4.0.1"
 aiohttp = "^3.8.4"
 celery = "^5.2.7"
 motor = "^3.1.1"
+fastapi-mail = {extras = ["aioredis"], version = "1.4.1"}
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.0.0"

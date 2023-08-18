@@ -1,6 +1,7 @@
 import toml
-from pydantic import BaseSettings, SecretStr
+from pydantic import  SecretStr, RedisDsn
 from pydantic.networks import AnyUrl
+from pydantic_settings import BaseSettings
 
 
 poetry_data = toml.load('pyproject.toml')['tool']['poetry']
@@ -13,7 +14,7 @@ class Settings(BaseSettings):
     # db settings
     MONGODB_URL: SecretStr | None = None
     DB_NAME: str | None = None
-    CELERY_BROKER_URL: str | None = None
+    CELERY_BROKER_URL: RedisDsn | None = None
 
     # open-api settings
     title: str = poetry_data['name']
