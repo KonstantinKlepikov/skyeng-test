@@ -15,6 +15,16 @@ class Token(BaseModel):
             }
         }
 
+class TokenData(BaseModel):
+    email: EmailStr | None = None
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "example@example.com",
+            }
+        }
+
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -43,7 +53,7 @@ class UserPassword(BaseModel):
         }
 
 
-class UserCreate(UserBase, UserPassword):
+class User(UserBase, UserPassword):
     pass
 
     class Config:
@@ -55,12 +65,7 @@ class UserCreate(UserBase, UserPassword):
         }
 
 
-class User(UserBase):
-    """User
-    """
-
-
-class UserInDb(UserBase, UserPassword):
+class UserInDb(UserBase):
     """User in bd
     """
     hashed_password: str

@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     MONGODB_URL: SecretStr | None = None
     DB_NAME: str | None = None
     CELERY_BROKER_URL: RedisDsn | None = None
+    TOKEN_EXPIRES_MINUTES: int | None = None
+    SECRET_KEY: SecretStr | None = None
+    ALGORITHM: int | None = None
 
     # open-api settings
     title: str = poetry_data['name']
