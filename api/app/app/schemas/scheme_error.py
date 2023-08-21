@@ -7,9 +7,9 @@ class HttpErrorMessage(BaseModel):
     message: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
-                "detail": "Some information about error",
+                "detail": "Some information about error.",
             }
         }
 
@@ -19,11 +19,23 @@ class HttpError400(HttpErrorMessage):
     """
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
-                "detail": "Request parameters error",
+                "detail": "Wrong login or password.",
                 }
             }
+
+
+class HttpError401(HttpErrorMessage):
+    """401 Unauthorized
+    """
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "detail": "Not authenticated.",
+            }
+        }
 
 
 class HttpError404(HttpErrorMessage):
@@ -31,9 +43,9 @@ class HttpError404(HttpErrorMessage):
     """
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
-                "detail": "Resource not found",
+                "detail": "Resource not found.",
             }
         }
 
@@ -43,22 +55,22 @@ class HttpError409(HttpErrorMessage):
     """
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "detail":
-                    "Something wrong with client or server data",
+                    "Something wrong with client or server data.",
                 }
             }
 
 
-class HttpError429(HttpErrorMessage):
-    """429 To Many Requests
+class HttpError422(HttpErrorMessage):
+    """422 User exist
     """
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "detail":
-                    "To Many Requests",
+                    "User with given email exist.",
                 }
             }

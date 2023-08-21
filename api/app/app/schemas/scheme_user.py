@@ -7,7 +7,7 @@ class Token(BaseModel):
     token_type: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "access_token":
                     "$2b$12$sifRrf5m7GM0hhFAF7BQ0.dIokOEZkfYOawlal8Jp/GeWh/4zn8la",
@@ -19,7 +19,7 @@ class TokenData(BaseModel):
     email: EmailStr | None = None
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "email": "example@example.com",
             }
@@ -30,7 +30,7 @@ class UserBase(BaseModel):
     email: EmailStr
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "email": "example@example.com",
             }
@@ -46,7 +46,7 @@ class UserPassword(BaseModel):
         return v
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "password": "1jkR3Zt8",
             }
@@ -57,7 +57,7 @@ class User(UserBase, UserPassword):
     pass
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "password": "1jkR3Zt8",
                 "email": "example@example.com",
@@ -71,7 +71,7 @@ class UserInDb(UserBase):
     hashed_password: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "email": "example@example.com",
                 "hashed_password":

@@ -1,5 +1,5 @@
 from app.config import settings
-from app.crud.crud_user import CRUDBase
+from app.crud.crud_base import CRUDBase
 from app.schemas.scheme_user import UserInDb
 from app.schemas.constraint import Collections
 
