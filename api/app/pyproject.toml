@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "skyeng-test"
 version = "0.0.1"
-description = "Example of simple block-post api with social functions"
+description = "Skyeng test"
 authors = ["Konstantin Klepikov <oformleno@gmail.com>"]
 
 [tool.poetry.dependencies]
