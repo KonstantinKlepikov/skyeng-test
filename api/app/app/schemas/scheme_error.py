@@ -33,7 +33,7 @@ class HttpError401(HttpErrorMessage):
     class Config:
         json_schema_extra = {
             "example": {
-                "detail": "Not authenticated.",
+                "detail": "User not authorized.",
             }
         }
 

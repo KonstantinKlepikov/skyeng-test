@@ -31,15 +31,23 @@ class Settings(BaseSettings):
             "name": "users",
             "description": "Users api",
         },
+        {
+            "name": "files",
+            "description": "Files api",
+        },
     ]
 
     # open-api errors
     AUTHENTICATE_RESPONSE_ERRORS: ErrorType = {
         400: {'model': scheme_error.HttpError400},
-        422: {'model': scheme_error.HttpError422}
+        409: {'model': scheme_error.HttpError409}
             }
     ACCESS_ERRORS: ErrorType = {
         401: {'model': scheme_error.HttpError401},
+            }
+    FILE_ERRORS: ErrorType = {
+        401: {'model': scheme_error.HttpError401},
+        409: {'model': scheme_error.HttpError409},
             }
 
 

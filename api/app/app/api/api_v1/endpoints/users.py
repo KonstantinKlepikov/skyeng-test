@@ -14,7 +14,6 @@ router = APIRouter()
 @router.post(
     '/create',
     status_code=status.HTTP_201_CREATED,
-    tags=["users"],
     responses=settings.AUTHENTICATE_RESPONSE_ERRORS,
     summary='Create user',
     response_description="""Created.""",
@@ -35,8 +34,8 @@ async def create_user(
     email_not_exist = await users.create(db, obj_in)  # if email not exist -> True
     if not email_not_exist:
         raise HTTPException(
-            status_code=422,
-            detail='Email is exist in data base'
+            status_code=409,
+            detail='Email is exist in data base.'
                 )
 
 

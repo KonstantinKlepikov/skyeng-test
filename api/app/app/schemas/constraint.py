@@ -1,3 +1,6 @@
+from bson import ObjectId
+from typing_extensions import Annotated
+from pydantic.functional_validators import AfterValidator
 from enum import Enum
 
 
@@ -24,3 +27,14 @@ class BaseStrEnum(str, BaseEnum):
 
 class Collections(BaseStrEnum):
     USERS = 'users'
+    FILES = 'files'
+
+
+def check_object_id(value: str) -> str:
+    if not ObjectId.is_valid(value):
+        raise ValueError('Invalid ObjectId')
+    return value
+
+
+PydanticObjectId = Annotated[str, AfterValidator(check_object_id)]
+
