@@ -1,5 +1,6 @@
 import os
 import bson
+from bson.errors import InvalidId
 import pickle
 from typing import Any
 from fastapi import (
@@ -7,8 +8,9 @@ from fastapi import (
     UploadFile,
     Depends,
     status,
-    HTTPException
+    HTTPException,
         )
+from fastapi.responses import Response
 from pymongo.client_session import ClientSession
 from app.db.init_db import get_session
 from app.schemas import scheme_file
@@ -25,15 +27,21 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses=settings.FILE_ERRORS,
     summary='Files ids owned by user',
-    response_description="""Files id's owned by user.""",
+    response_description="""Files ids owned by user.""",
         )
 async def get_files(
     user: dict[str, Any] = Depends(security_user.get_current_user),
     db: ClientSession = Depends(get_session),
+    lenght: int = 100,
         ) -> None:
-    """Get files owned by user
+    """Get files ids owned by user
     """
-    # TODO:
+    f = await files.get_many(
+        db,
+        q={"user_id": str(user['_id'])},
+        lenght=lenght
+            )
+    return scheme_file.FilesInDb(files_ids=[str(i['_id']) for i in f])
 
 
 @router.post(
@@ -50,7 +58,7 @@ async def create_file(
         ) -> None:
     """Upload new file, check is .py and save it in db
     """
-    _, ex = os.path.splitext(file.filename)
+    name, ex = os.path.splitext(file.filename)
     if ex != '.py':
         raise HTTPException(
             status_code=409,
@@ -58,6 +66,7 @@ async def create_file(
                 )
     obj_in = scheme_file.FileInDb(
         raw=bson.Binary(pickle.dumps(file.file)),
+        name=name,
         user_id=str(user['_id']),
             )
     await files.create(db, obj_in)
@@ -77,7 +86,27 @@ async def get_file(
         ) -> None:
     """Get file binary from db
     """
-    # TODO:
+    try:
+        f = await files.get(db, {'_id': bson.ObjectId(id)})
+    except InvalidId:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Wrong file {id=}.'
+                )
+
+    if f and f['user_id'] == str(user['_id']):
+        return Response(
+            content=f['raw'],
+            media_type='text/x-python',
+            headers = {
+                'Content-Disposition': f'''attachment; filename="{f['name']}.py"'''
+                }
+            )
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f'File with {id=} not found.'
+                )
 
 
 @router.delete(
@@ -94,14 +123,28 @@ async def delete_file(
         ) -> None:
     """Delete file from db
     """
-    # TODO:
+    try:
+        result = await files.delete(
+            db,
+            q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},
+                )
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=404,
+                detail=f'File with {id=} not found.'
+                    )
+    except InvalidId:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Wrong file {id=}.'
+                )
 
 
 @router.put(
     "/file/",
     status_code=status.HTTP_201_CREATED,
     responses=settings.FILE_ERRORS,
-    summary='File delete',
+    summary='File update',
     response_description="""Updated.""",
         )
 async def update_file(
@@ -112,5 +155,30 @@ async def update_file(
         ) -> None:
     """Update file in db
     """
-    # TODO:
-
+    try:
+        name, ex = os.path.splitext(file.filename)
+        if ex != '.py':
+            raise HTTPException(
+                status_code=409,
+                detail='Wrong file extention.'
+                    )
+        obj_in = scheme_file.FileInDb(
+            raw=bson.Binary(pickle.dumps(file.file)),
+            name=name,
+            user_id=str(user['_id']),
+            )
+        result = await files.replace(
+            db,
+            q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},
+            obj_in=obj_in,
+                )
+        if not result.upserted_id:
+            raise HTTPException(
+                status_code=404,
+                detail=f'File with {id=} not found.'
+                    )
+    except InvalidId:
+        raise HTTPException(
+            status_code=404,
+            detail=f'Wrong file {id=}.'
+                )
