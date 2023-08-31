@@ -12,7 +12,7 @@ ENV PYTHONPATH=/app/
 
 RUN pip install -r requirements.txt
 
-ENV API_ROOT='http://api:8000'
+ENV API_ROOT='http://skyeng-api:8000'
 
 ENTRYPOINT ["streamlit", "run"]
 CMD ["app/main.py"]

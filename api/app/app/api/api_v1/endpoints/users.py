@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from pymongo.client_session import ClientSession
+from pymongo.errors import DuplicateKeyError
 from app.schemas import scheme_user
 from app.crud.crud_user import users
 from app.core import security
@@ -31,7 +32,14 @@ async def create_user(
         email=user.email,
         hashed_password=security.get_password_hash(user.password)
             )
-    email_not_exist = await users.create(db, obj_in)  # if email not exist -> True
+    try:
+        email_not_exist = await users.create(db, obj_in)  # if email not exist -> True
+    except DuplicateKeyError:
+        raise HTTPException(
+            status_code=409,
+            detail='Email is exist in data base.'
+                )
+
     if not email_not_exist:
         raise HTTPException(
             status_code=409,

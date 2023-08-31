@@ -33,7 +33,7 @@ class FileInDb(FileBase):
 
 
 class FilesInDb(BaseModel):
-    files_ids: list[PydanticObjectId]
+    files: dict[PydanticObjectId, str]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

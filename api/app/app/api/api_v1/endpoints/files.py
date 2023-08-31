@@ -41,7 +41,9 @@ async def get_files(
         q={"user_id": str(user['_id'])},
         lenght=lenght
             )
-    return scheme_file.FilesInDb(files_ids=[str(i['_id']) for i in f])
+    return scheme_file.FilesInDb(
+        files={str(i['_id']): i['name'] for i in f}
+        )
 
 
 @router.post(
@@ -172,7 +174,8 @@ async def update_file(
             q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},
             obj_in=obj_in,
                 )
-        if not result.upserted_id:
+
+        if result.matched_count == 0:
             raise HTTPException(
                 status_code=404,
                 detail=f'File with {id=} not found.'
