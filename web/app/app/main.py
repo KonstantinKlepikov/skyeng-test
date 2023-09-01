@@ -82,7 +82,7 @@ def upload_file_for_change(file_id: str) -> None:
 
         if submitted and uploaded_file is not None:
             file = {'file': (uploaded_file.name, uploaded_file.getvalue())}
-            r = requests.put(
+            r = requests.patch(
                 url,
                 files=file,
                 params={"id": file_id},
@@ -95,6 +95,43 @@ def upload_file_for_change(file_id: str) -> None:
                 st.session_state['reload'] = True
             else:
                 show_api_error(r)
+
+
+def delete_file(file_id: str) -> None:
+    """Delete file with given id
+    """
+    token = st.session_state.get('access_token')
+    url = os.path.join(API_ROOT, API_VERSION, 'files/file')
+    r = requests.put(
+        url,
+        params={"id": file_id},
+        headers={
+            'Authorization': f'Bearer {token}'
+                }
+            )
+    if r.status_code == 200:
+        get_files()
+        st.session_state['reload'] = True
+    else:
+        show_api_error(r)
+
+
+def get_file_text(file_id: str) -> bytes:
+    """Det file text with given id
+    """
+    token = st.session_state.get('access_token')
+    url = os.path.join(API_ROOT, API_VERSION, 'files/file')
+    r = requests.get(
+        url,
+        params={"id": file_id},
+        headers={
+            'Authorization': f'Bearer {token}'
+                }
+            )
+    if r.status_code == 200:
+        return r.content
+    else:
+        show_api_error(r)
 
 
 def show_log_in(holder: DeltaGenerator) -> None:
@@ -150,8 +187,7 @@ def show_log_in(holder: DeltaGenerator) -> None:
 def show_autorized() -> None:
     """Right side autorized scenario
     """
-    st.caption('Login as:')
-    st.subheader(f"**{st.session_state['email']}**")
+    st.write(f'Login as: **{st.session_state["email"]}**')
     logout = st.button("logout")
 
     get_files()
@@ -176,27 +212,38 @@ def main():
         if st.session_state.get('access_token'):
             show_autorized()
 
-        st.markdown('---')
+        st.text("")
+        st.text("")
 
         if st.session_state.get('files') is not None:
-            st.subheader('Upload new file')
+            st.header('Upload new file')
             upload_file()
 
+            st.text("")
+            st.text("")
+            st.text("")
+            st.text("")
+
             st.header('Your uploaded files')
-            st.markdown('---')
 
             with st.container():
 
                 for k, v in st.session_state['files'].items():
-                    st.write(f'{v}'+'.py')
-
-                    if st.button(label="Download", key=f"download{k}"):
-                        st.write('Downloaded!')
-
-                    if st.button(label="Delete", key=f"delete{k}"):
-                        st.write('Delened!')
+                    st.markdown('---')
+                    is_checked = ':white_check_mark:' if v['is_checked'] else ':no_entry_sign:'
+                    is_email_sended =':white_check_mark:' if v['is_email_sended'] else ':no_entry_sign:'
+                    st.subheader(f'{v["name"]}'+'.py' )
+                    st.write(f'Is checked: {is_checked}')
+                    st.write(f'Is email sended: {is_email_sended}')
 
                     upload_file_for_change(file_id=k)
+
+                    if st.button(label="Delete", key=f"delete{k}"):
+                        delete_file(file_id=k)
+
+                    if st.button(label="Show", key=f"show{k}"):
+                        code = get_file_text(file_id=k).decode('utf-8')
+                        st.code(code, language='python')
 
                 if st.session_state.get('reload'):
                     st.session_state['reload'] = False

@@ -21,6 +21,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${DEV_ROOT_USERNAME?Variable not set}
       MONGO_INITDB_ROOT_PASSWORD: ${DEV_ROOT_PASSWORD?Variable not set}
       MONGO_INITDB_DATABASE: dev-db
+      MONGODB_REPLICA_SET_MODE: primary
     volumes:
       - mongo-skyeng-data:/data/db
     networks:

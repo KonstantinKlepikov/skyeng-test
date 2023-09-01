@@ -28,6 +28,7 @@ class BaseStrEnum(str, BaseEnum):
 class Collections(BaseStrEnum):
     USERS = 'users'
     FILES = 'files'
+    FILES_RAW = 'files_raw'
 
 
 def check_object_id(value: str) -> str:
@@ -37,4 +38,3 @@ def check_object_id(value: str) -> str:
 
 
 PydanticObjectId = Annotated[str, AfterValidator(check_object_id)]
-

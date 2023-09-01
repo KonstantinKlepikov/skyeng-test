@@ -35,6 +35,7 @@ async def create_collections() -> None:
                     'email',
                     unique=True
                         )
+            # TODO: add files indexes
         except CollectionInvalid:
             continue
 
