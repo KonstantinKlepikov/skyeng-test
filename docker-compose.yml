@@ -46,6 +46,7 @@ services:
   skyeng-celery-worker:
     image: skyeng-celery-worker
     container_name: skyeng-celery-worker
+    env_file: .env
     build:
       context: ./api
       dockerfile: celeryworker.dockerfile

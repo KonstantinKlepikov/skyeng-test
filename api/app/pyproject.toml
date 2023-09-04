@@ -21,6 +21,7 @@ celery = "^5.2.7"
 motor = "^3.1.1"
 pymongo = "^4.4.1"
 fastapi-mail = {extras = ["aioredis"], version = "1.4.1"}
+redis = "^4.3"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.0.0"

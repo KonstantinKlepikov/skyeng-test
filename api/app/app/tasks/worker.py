@@ -2,7 +2,7 @@ import asyncio
 from celery.states import FAILURE, PENDING
 from pydantic import  EmailStr
 from app.core.celery_app import celery_app
-from api.app.app.core.core_email import send_email
+from app.core.core_email import send_email
 
 
 @celery_app.task
