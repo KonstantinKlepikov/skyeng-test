@@ -1,6 +1,6 @@
 import toml
 from typing import Type
-from pydantic import  SecretStr, RedisDsn
+from pydantic import  SecretStr, RedisDsn, EmailStr
 from pydantic.networks import AnyUrl
 from pydantic_settings import BaseSettings
 from app.schemas import scheme_error
@@ -21,6 +21,18 @@ class Settings(BaseSettings):
     TOKEN_EXPIRES_MINUTES: int | None = None
     SECRET_KEY: SecretStr | None = None
     ALGORITHM: str | None = None
+
+    # email settings
+    MAIL_USERNAME: str | None = None
+    MAIL_PASSWORD: SecretStr | None = None
+    MAIL_FROM: EmailStr | None = None
+    MAIL_PORT: int = 587
+    MAIL_SERVER: str | None = None  # FIXME: i a server uri str
+    MAIL_FROM_NAME: str | None = None
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
 
     # open-api settings
     title: str = poetry_data['name']
