@@ -1,15 +1,25 @@
 import asyncio
-from celery.states import FAILURE, PENDING
+# from celery.schedules import crontab
 from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
 
 
+@celery_app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        10.0,
+        query_in_db.s('hello'),
+        name='check-solutions'
+            )
+
+
 @celery_app.task
-def query_in_db(id: str) -> str:
+def query_in_db(id: str) -> dict[str, str]:
     """Query data for chedulercheck in db
     """
-    # guery db for file data
+    # query db for file data
+    return {'result': id}
 
 
 @celery_app.task
