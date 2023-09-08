@@ -6,6 +6,7 @@
 
 - `make serve` to run dev mode
 - `make down` to stop
+- rebuild single service `docker compose up -d --no-deps --build <service-name>`
 
 ### Use local resources to watch project
 

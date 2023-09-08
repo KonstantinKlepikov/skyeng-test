@@ -49,3 +49,15 @@ async def get_session() -> Generator[ClientSession, None, None]:
         yield session
     finally:
         await session.end_session()
+
+
+class BdContext:
+    def __init__(self, client: AsyncIOMotorClient):
+        self.client = client
+
+    async def __aenter__(self):
+        self.session = await self.client.start_session()
+        return self.session
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        await self.session.end_session()

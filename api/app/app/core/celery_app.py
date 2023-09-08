@@ -9,5 +9,5 @@ celery_app = Celery(
     # backend='rpc://',
     include=['app.tasks', ],
         )
-default_config = 'app.core.celeryconfig'
+default_config = 'app.core.celeryconfig' # FIXME: remove result backend
 celery_app.config_from_object(default_config)

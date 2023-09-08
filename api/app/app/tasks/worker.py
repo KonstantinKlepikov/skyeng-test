@@ -3,23 +3,46 @@ import asyncio
 from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
+from app.schemas import scheme_file
+from app.crud.crud_file import files, files_raw
+from app.db.init_db import BdContext, client
 
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
         10.0,
-        query_in_db.s('hello'),
+        query_in_db.s(),
         name='check-solutions'
             )
 
 
+async def get_unchecked_raw() -> list[scheme_file.FileRaw]:
+    """"""
+    async with BdContext(client) as db:
+
+        not_checked = await files.get_many(
+            db=db,
+            q={'is_checked"': False, 'is_deleted_by_user': False}
+                ) # FIXME: here is nothing to return
+        tasks = [
+            asyncio.create_task(files_raw.get(db=db, q={'file_id': str(i['_id'])}))
+            for i in
+            not_checked
+                ]
+        results = [await task for task in tasks]
+        return results # FIXME: correct result
+
+
 @celery_app.task
-def query_in_db(id: str) -> dict[str, str]:
+def query_in_db() -> dict[str, str]:
     """Query data for chedulercheck in db
     """
-    # query db for file data
-    return {'result': id}
+    # result = asyncio.run(get_unchecked_raw())
+    result = asyncio.get_event_loop().run_until_complete(
+        get_unchecked_raw()
+            )
+    return result # FIXME: correct result and type
 
 
 @celery_app.task
