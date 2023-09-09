@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: SecretStr | None = None
     MAIL_FROM: EmailStr | None = None
     MAIL_PORT: int = 587
-    MAIL_SERVER: str | None = None  # FIXME: i a server uri str
+    MAIL_SERVER: str | None = None  # FIXME: a server uri str
     MAIL_FROM_NAME: str | None = None
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False

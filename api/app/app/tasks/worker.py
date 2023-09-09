@@ -1,9 +1,9 @@
 import asyncio
+from typing import Any
 # from celery.schedules import crontab
 from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
-from app.schemas import scheme_file
 from app.crud.crud_file import files, files_raw
 from app.db.init_db import BdContext, client
 
@@ -17,32 +17,31 @@ def setup_periodic_tasks(sender, **kwargs):
             )
 
 
-async def get_unchecked_raw() -> list[scheme_file.FileRaw]:
+async def get_unchecked_raw() -> list[dict[str, Any]]:
     """"""
     async with BdContext(client) as db:
 
         not_checked = await files.get_many(
             db=db,
-            q={'is_checked"': False, 'is_deleted_by_user': False}
-                ) # FIXME: here is nothing to return
+            q={'is_checked': False, 'is_deleted_by_user': False}
+                )
         tasks = [
             asyncio.create_task(files_raw.get(db=db, q={'file_id': str(i['_id'])}))
             for i in
             not_checked
                 ]
         results = [await task for task in tasks]
-        return results # FIXME: correct result
+        return results
 
 
 @celery_app.task
 def query_in_db() -> dict[str, str]:
     """Query data for chedulercheck in db
     """
-    # result = asyncio.run(get_unchecked_raw())
     result = asyncio.get_event_loop().run_until_complete(
         get_unchecked_raw()
             )
-    return result # FIXME: correct result and type
+    return result # FIXME: run many chain tasks
 
 
 @celery_app.task

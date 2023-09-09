@@ -29,7 +29,7 @@ class Collections(BaseStrEnum):
     USERS = 'users'
     FILES = 'files'
     FILES_RAW = 'files_raw'
-    FILES_CHECK = 'files_check'
+    FILES_CHECK = 'files_check'  # TODO: remove files chck collection
 
 
 def check_object_id(value: str) -> str:

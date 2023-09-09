@@ -8,3 +8,5 @@ mongodb_backend_settings = {
     'database': settings.DB_NAME,
     'taskmeta_collection': constraint.Collections.FILES_CHECK.value,
         }
+
+# TODO: remove this file

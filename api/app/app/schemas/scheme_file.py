@@ -85,3 +85,23 @@ class Files(BaseModel):
                 }
             },
         )
+
+
+class FilesRaw(BaseModel):
+    files_raw: dict[PydanticObjectId, FileRaw]
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        json_schema_extra = {
+            "example": {
+                "files_raw": {
+                    "12345":
+                        {
+                    "user_id": "123456789",
+                    "file_id": "123456789",
+                    "raw": "12345",
+                        }
+                    },
+                }
+            },
+        )
