@@ -3,11 +3,12 @@ import tempfile
 from typing import Any
 from bson import ObjectId
 # from celery.schedules import crontab
-from pydantic import  EmailStr
+# from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
 from app.crud.crud_file import files, files_raw
 from app.crud.crud_user import users
+from app.schemas import scheme_file
 from app.db.init_db import BdContext, client
 from app.config import settings
 
@@ -51,7 +52,7 @@ async def get_send_save(check: dict[str, Any]) -> None:
             '_id': ObjectId(check['file_id']),
             'is_checked': True,
             'is_email_sended': True
-                })
+                })  # FIXME: this is not correct - we need change pydantic model... or redefine input in crud
 
         # send email
         await send_email(
