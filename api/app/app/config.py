@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     SECRET_KEY: SecretStr | None = None
     ALGORITHM: str | None = None
 
+    # celery
+    TIME_TO_CHECK: float = 30.0
+
     # email settings
     MAIL_USERNAME: str | None = None
     MAIL_PASSWORD: SecretStr | None = None

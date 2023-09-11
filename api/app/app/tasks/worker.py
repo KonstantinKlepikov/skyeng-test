@@ -1,17 +1,21 @@
 import asyncio
+import tempfile
 from typing import Any
+from bson import ObjectId
 # from celery.schedules import crontab
 from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
 from app.crud.crud_file import files, files_raw
+from app.crud.crud_user import users
 from app.db.init_db import BdContext, client
+from app.config import settings
 
 
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        10.0,
+        settings.TIME_TO_CHECK,
         query_in_db.s(),
         name='check-solutions'
             )
@@ -34,40 +38,67 @@ async def get_unchecked_raw() -> list[dict[str, Any]]:
         return results
 
 
+async def get_send_save(check: dict[str, Any]) -> None:
+    """"""""
+    async with BdContext(client) as db:
+        # TODO:  here we need a transaction
+
+        # get user
+        user = await users.get(db, {'_id': ObjectId(check['user_id'])})
+
+        # fix result in db
+        files.update(db, {
+            '_id': ObjectId(check['file_id']),
+            'is_checked': True,
+            'is_email_sended': True
+                })
+
+        # send email
+        await send_email(
+            check['result'],
+            user['email'],
+            settings.MAIL_FROM_NAME
+                )
+
+        # TODO: close transaction
+
+
 @celery_app.task
-def query_in_db() -> dict[str, str]:
+def query_in_db() -> None:
     """Query data for chedulercheck in db
     """
     result = asyncio.get_event_loop().run_until_complete(
         get_unchecked_raw()
             )
-    return result # FIXME: run many chain tasks
+    for check in result:
+        check['_id'] = str(check['_id'])  # FIXME:
+        chain = make_flake_check.s(check) | celery_save_and_mail.s()
+        chain()
 
 
 @celery_app.task
-def make_flake_check(to_check: str) -> str:
+def make_flake_check(check: dict[str, Any]) -> dict[str, bool | str]:
     """Make flake8 check
     """
     # create temporal file
+    with tempfile.TemporaryFile() as f:
+        f.write(check['raw'].encode('utf-8'))
+        f.seek(0)
 
-    # use flake8 for check
+        # TODO: use some checks with temporal file here
 
-    # get result and return it as text
+        # fix result of check
+        check['result'] = 'Check result'
+
+    if check.get('result'):
+        return check
+    raise KeyError('No walid result')
 
 
 @celery_app.task
-def save_result(resul_of_check: str) -> str:
-    """Save result in db
+def celery_save_and_mail(check: dict[str, Any]) -> None:
+    """Send email with result of check and save to db
     """
-    # query to save
-
-
-@celery_app.task(name="celery-mail", bind=True)
-def send_email(message: str) -> None:
-    """Send email with result of check
-    """
-
-
-@celery_app.task(name="celery-mail", bind=True)
-def celery_mail(message: str, recipient: EmailStr, subject: str):
-    asyncio.run(send_email(message, recipient, subject))
+    asyncio.get_event_loop().run_until_complete(
+        get_send_save(check)
+            )
