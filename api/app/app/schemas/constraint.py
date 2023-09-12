@@ -26,13 +26,16 @@ class BaseStrEnum(str, BaseEnum):
 
 
 class Collections(BaseStrEnum):
+    """Mongodb collections
+    """
     USERS = 'users'
     FILES = 'files'
     FILES_RAW = 'files_raw'
-    FILES_CHECK = 'files_check'  # TODO: remove files chck collection
 
 
 def check_object_id(value: str) -> str:
+    """Validation of mongodb id
+    """
     if not ObjectId.is_valid(value):
         raise ValueError('Invalid ObjectId')
     return value

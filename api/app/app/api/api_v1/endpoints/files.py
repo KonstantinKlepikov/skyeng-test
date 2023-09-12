@@ -170,7 +170,7 @@ async def delete_file(
     """Mark file as deleted
     """
     try:
-        obj_in = scheme_file.FileCheck(is_deleted_by_user=True)
+        obj_in = scheme_file.FileCheck(is_deleted_by_user=True).model_dump()
         result = await files.update(
             db,
             q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},
@@ -211,12 +211,12 @@ async def update_file(
                 detail='Wrong file extention.'
                     )
 
-        # FIXME: this needs a transaction ->
+        # TODO: this needs a transaction ->
         obj_in = scheme_file.FileRaw(
             raw=file.file.read().decode(),
             file_id=id,
             user_id=str(user['_id']),
-                )
+                ).model_dump()
 
         result = await files_raw.replace(
             db,
@@ -230,7 +230,7 @@ async def update_file(
                 detail=f'File with {id=} not found.'
                     )
 
-        obj_in = scheme_file.FileCheck()
+        obj_in = scheme_file.FileCheck().model_dump()
         result = await files.update(
             db,
             q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},

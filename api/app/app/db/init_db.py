@@ -52,6 +52,8 @@ async def get_session() -> Generator[ClientSession, None, None]:
 
 
 class BdContext:
+    """Mongodb context manager for celery
+    """
     def __init__(self, client: AsyncIOMotorClient):
         self.client = client
 

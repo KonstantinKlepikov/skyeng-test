@@ -2,13 +2,10 @@ import asyncio
 import tempfile
 from typing import Any
 from bson import ObjectId
-# from celery.schedules import crontab
-# from pydantic import  EmailStr
 from app.core.celery_app import celery_app
 from app.core.core_email import send_email
 from app.crud.crud_file import files, files_raw
 from app.crud.crud_user import users
-from app.schemas import scheme_file
 from app.db.init_db import BdContext, client
 from app.config import settings
 
@@ -23,7 +20,11 @@ def setup_periodic_tasks(sender, **kwargs):
 
 
 async def get_unchecked_raw() -> list[dict[str, Any]]:
-    """"""
+    """Get unchecked raw files from db and pipe it to tasks
+
+    Returns:
+        list[dict[str, Any]] - db data
+    """
     async with BdContext(client) as db:
 
         not_checked = await files.get_many(
@@ -48,18 +49,20 @@ async def get_send_save(check: dict[str, Any]) -> None:
         user = await users.get(db, {'_id': ObjectId(check['user_id'])})
 
         # fix result in db
-        files.update(db, {
-            '_id': ObjectId(check['file_id']),
-            'is_checked': True,
-            'is_email_sended': True
-                })  # FIXME: this is not correct - we need change pydantic model... or redefine input in crud
-
-        # send email
-        await send_email(
-            check['result'],
-            user['email'],
-            settings.MAIL_FROM_NAME
+        update = await files.update(
+            db=db,
+            q={'_id': ObjectId(check['file_id'])},
+            obj_in={'is_checked': True, 'is_email_sended': True}
                 )
+
+        if update.matched_count != 0:
+
+            # send email
+            await send_email(
+                check['result'],
+                user['email'],
+                settings.MAIL_FROM_NAME
+                    )
 
         # TODO: close transaction
 

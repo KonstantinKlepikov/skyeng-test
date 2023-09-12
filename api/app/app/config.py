@@ -1,7 +1,6 @@
 import toml
 from typing import Type
 from pydantic import  SecretStr, RedisDsn, EmailStr
-from pydantic.networks import AnyUrl
 from pydantic_settings import BaseSettings
 from app.schemas import scheme_error
 
@@ -14,15 +13,15 @@ class Settings(BaseSettings):
     # api vars
     API_V1: str = "/api/v1"
 
-    # db settings
+    # mongo settings
     MONGODB_URL: SecretStr | None = None
     DB_NAME: str | None = None
-    CELERY_BROKER_URL: RedisDsn | None = None
     TOKEN_EXPIRES_MINUTES: int | None = None
     SECRET_KEY: SecretStr | None = None
     ALGORITHM: str | None = None
 
     # celery
+    CELERY_BROKER_URL: RedisDsn | None = None
     TIME_TO_CHECK: float = 30.0
 
     # email settings
