@@ -10,10 +10,11 @@ class Token(BaseModel):
         json_schema_extra = {
             "example": {
                 "access_token":
-                    "$2b$12$sifRrf5m7GM0hhFAF7BQ0.dIokOEZkfYOawlal8Jp/GeWh/4zn8la",
+                    "$somehash",
                     "token_type": "bearer",
             }
         }
+
 
 class TokenData(BaseModel):
     email: EmailStr | None = None
@@ -35,6 +36,7 @@ class UserBase(BaseModel):
                 "email": "example@example.com",
             }
         }
+
 
 class UserPassword(BaseModel):
     password: str
@@ -75,6 +77,6 @@ class UserInDb(UserBase):
             "example": {
                 "email": "example@example.com",
                 "hashed_password":
-                    "$2b$12$sifRrf5m7GM0hhFAF7BQ0.dIokOEZkfYOawlal8Jp/GeWh/4zn8la",
+                    "$somehash",
             }
         }

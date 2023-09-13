@@ -33,7 +33,8 @@ async def create_user(
         hashed_password=security.get_password_hash(user.password)
             )
     try:
-        email_not_exist = await users.create(db, obj_in)  # if email not exist -> True
+        # if email not exist -> True
+        email_not_exist = await users.create(db, obj_in)
     except DuplicateKeyError:
         raise HTTPException(
             status_code=409,
@@ -65,17 +66,23 @@ async def login(
     - **email** as login
     - **password**
     """
-    db_user: scheme_user.UserInDb = await users.get(db, {"email": user.username})
+    db_user: scheme_user.UserInDb = await users.get(
+        db,
+        {"email": user.username}
+            )
 
     if not db_user or not security.verify_password(
         user.password, db_user["hashed_password"]
             ):
         raise HTTPException(
-            status_code=400, detail='Wrong login or password or user not exist.'
+            status_code=400,
+            detail='Wrong login or password or user not exist.'
                 )
 
     else:
         return {
-            'access_token': security.create_access_token(subject=user.username),
+            'access_token': security.create_access_token(
+                subject=user.username
+                    ),
             "token_type": "bearer"
                 }

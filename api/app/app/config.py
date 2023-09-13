@@ -1,6 +1,6 @@
 import toml
 from typing import Type
-from pydantic import  SecretStr, RedisDsn, EmailStr
+from pydantic import SecretStr, RedisDsn, EmailStr
 from pydantic_settings import BaseSettings
 from app.schemas import scheme_error
 

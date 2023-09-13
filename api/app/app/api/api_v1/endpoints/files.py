@@ -74,7 +74,7 @@ async def create_file(
         name=name,
         user_id=str(user['_id']),
             )
-    # FIXME: this needs a transaction ->
+    # TODO: this needs a transaction ->
     result = await files.create(db, obj_in)
     obj_in = scheme_file.FileRaw(
         raw=file.file.read().decode(),
@@ -109,7 +109,7 @@ async def get_file(
                 )
 
     if f and f['user_id'] == str(user['_id']):
-            return f['raw']
+        return f['raw']
     else:
         raise HTTPException(
             status_code=404,
@@ -132,7 +132,7 @@ async def delete_file(
     """Delete file from db
     """
     try:
-        # FIXME: this needs a transaction ->
+        # TODO: this needs a transaction ->
         result = await files.delete(
             db,
             q={'_id': bson.ObjectId(id), 'user_id': str(user['_id'])},
@@ -162,7 +162,7 @@ async def delete_file(
     summary='Mark file as deleted',
     response_description="""Marked.""",
         )
-async def delete_file(
+async def mark_as_deleted_file(
     id: str,
     user: dict[str, Any] = Depends(security_user.get_current_user),
     db: ClientSession = Depends(get_session),

@@ -32,7 +32,10 @@ async def get_unchecked_raw() -> list[dict[str, Any]]:
             q={'is_checked': False, 'is_deleted_by_user': False}
                 )
         tasks = [
-            asyncio.create_task(files_raw.get(db=db, q={'file_id': str(i['_id'])}))
+            asyncio.create_task(files_raw.get(
+                db=db,
+                q={'file_id': str(i['_id'])}
+                    ))
             for i in
             not_checked
                 ]
@@ -41,9 +44,10 @@ async def get_unchecked_raw() -> list[dict[str, Any]]:
 
 
 async def get_send_save(check: dict[str, Any]) -> None:
-    """"""""
+    """Get user data from db. Update file data and send email
+    """
     async with BdContext(client) as db:
-        # TODO:  here we need a transaction
+        # -> TODO:  here we need a transaction
 
         # get user
         user = await users.get(db, {'_id': ObjectId(check['user_id'])})
@@ -63,8 +67,7 @@ async def get_send_save(check: dict[str, Any]) -> None:
                 user['email'],
                 settings.MAIL_FROM_NAME
                     )
-
-        # TODO: close transaction
+        # <-
 
 
 @celery_app.task
@@ -75,7 +78,7 @@ def query_in_db() -> None:
         get_unchecked_raw()
             )
     for check in result:
-        check['_id'] = str(check['_id'])  # FIXME:
+        check['_id'] = str(check['_id'])  # FIXME: is dummy
         chain = make_flake_check.s(check) | celery_save_and_mail.s()
         chain()
 
@@ -101,7 +104,7 @@ def make_flake_check(check: dict[str, Any]) -> dict[str, bool | str]:
 
 @celery_app.task
 def celery_save_and_mail(check: dict[str, Any]) -> None:
-    """Send email with result of check and save to db
+    """Send email with result of check and save result to db
     """
     asyncio.get_event_loop().run_until_complete(
         get_send_save(check)

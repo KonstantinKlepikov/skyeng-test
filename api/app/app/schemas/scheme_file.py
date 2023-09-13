@@ -12,6 +12,7 @@ class FileBase(BaseModel):
                     }
                 }
 
+
 class FileName(BaseModel):
     name: str
 
@@ -27,6 +28,7 @@ class FileCheck(BaseModel):
     is_checked: bool = False
     is_email_sended: bool = False
     is_deleted_by_user: bool = False
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -70,21 +72,20 @@ class Files(BaseModel):
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "files": {
-                    "12345":
-                        {
-                    "user_id": "123456789",
-                    "name": "my_file_name",
-                    "is_checked": False,
-                    "is_email_sended": False,
-                    "is_deleted_by_user": False,
+                    "12345": {
+                        "user_id": "123456789",
+                        "name": "my_file_name",
+                        "is_checked": False,
+                        "is_email_sended": False,
+                        "is_deleted_by_user": False,
+                            },
                         },
-                    },
-                }
-            },
-        )
+                    }
+                },
+            )
 
 
 class FilesRaw(BaseModel):
@@ -92,16 +93,15 @@ class FilesRaw(BaseModel):
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "files_raw": {
-                    "12345":
-                        {
-                    "user_id": "123456789",
-                    "file_id": "123456789",
-                    "raw": "12345",
-                        }
-                    },
-                }
-            },
-        )
+                    "12345": {
+                        "user_id": "123456789",
+                        "file_id": "123456789",
+                        "raw": "12345",
+                            }
+                        },
+                    }
+                },
+            )

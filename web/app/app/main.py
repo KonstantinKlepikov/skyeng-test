@@ -198,6 +198,9 @@ def show_autorized() -> None:
         st.session_state['files'] = None
         st.experimental_rerun()
 
+    if st.button(label='Refresh page', type="primary"):
+        st.experimental_rerun()
+
 
 def main():
 
@@ -233,8 +236,7 @@ def main():
                     is_checked = ':white_check_mark:' if v['is_checked'] else ':no_entry_sign:'
                     is_email_sended =':white_check_mark:' if v['is_email_sended'] else ':no_entry_sign:'
                     st.subheader(f'{v["name"]}'+'.py' )
-                    st.write(f'Is checked: {is_checked}')
-                    st.write(f'Is email sended: {is_email_sended}')
+                    st.write(f'Checked: {is_checked}. Email sended: {is_email_sended}')
 
                     upload_file_for_change(file_id=k)
 
